@@ -1,0 +1,1 @@
+raw Hardcover JSON files
