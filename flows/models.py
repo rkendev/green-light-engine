@@ -20,6 +20,7 @@ class BookDoc(BaseModel):
     isbns: List[str]
     rating:         Optional[float] = None   # ? rename
     ratings_count:  Optional[int]   = None   # ? keep
+    publication_date: date | None = None   
 
     class Config:
         extra = "allow"          # ignore fields we don’t list
