@@ -1,0 +1,18 @@
+# top-level .gitignore
+# ───────────────────
+# virtual-env & Poetry stuff
+.venv/
+# Jupyter checkpoints
+**/.ipynb_checkpoints/
+# Data blobs
+data/raw/
+data/green_light.duckdb
+# DuckDB temp files
+*.duckdb-wal
+# Python cache
+__pycache__/
+*.py[cod]
+# OS cruft
+.DS_Store
+Thumbs.db
+
