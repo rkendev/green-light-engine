@@ -13,39 +13,52 @@ Schema
 book_id · isbn13 · title · authors · series · average_rating · ratings_count
 """
 # ── stdlib ─────────────────────────────────────────────────────────────
-import argparse, csv, glob, pathlib, re, sys, time
+import argparse
+import csv
+import glob
+import pathlib
+import re
+import sys
+import time
+
 # ── 3rd-party ──────────────────────────────────────────────────────────
 import duckdb
 
 # ── CLI ────────────────────────────────────────────────────────────────
 cli = argparse.ArgumentParser()
-cli.add_argument("--reset", action="store_true",
-                 help="drop the table before (re)loading")
+cli.add_argument(
+    "--reset", action="store_true", help="drop the table before (re)loading"
+)
 args = cli.parse_args()
 
 # ── paths ──────────────────────────────────────────────────────────────
-HERE     = pathlib.Path(__file__).resolve().parent
-RAW_DIR  = HERE.parent / "data" / "raw" / "goodreads"
-DB_FILE  = HERE.parent / "data" / "green_light.duckdb"
+HERE = pathlib.Path(__file__).resolve().parent
+RAW_DIR = HERE.parent / "data" / "raw" / "goodreads"
+DB_FILE = HERE.parent / "data" / "green_light.duckdb"
 
-FILES = sorted(fp for fp in glob.glob(str(RAW_DIR / "book*csv"))
-               if "-" in pathlib.Path(fp).stem)
+FILES = sorted(
+    fp for fp in glob.glob(str(RAW_DIR / "book*csv")) if "-" in pathlib.Path(fp).stem
+)
 if not FILES:
     sys.exit("❌  no book-chunk CSVs found under data/raw/goodreads")
 
 # ── find (or not) a Series column name ────────────────────────────────
-with open(FILES[0], newline='', encoding='utf-8', errors='ignore') as f:
+with open(FILES[0], newline="", encoding="utf-8", errors="ignore") as f:
     header = next(csv.reader(f))
 header_lower = [h.lower() for h in header]
-if   "series"  in header_lower: SERIES_COL = header[header_lower.index("series")]
-elif "series." in header_lower: SERIES_COL = header[header_lower.index("series.")]
-else:                           SERIES_COL = None        # not present at all
+if "series" in header_lower:
+    SERIES_COL = header[header_lower.index("series")]
+elif "series." in header_lower:
+    SERIES_COL = header[header_lower.index("series.")]
+else:
+    SERIES_COL = None  # not present at all
 
 # expression used in SQL ↓↓↓
 if SERIES_COL:
-    SERIES_EXPR = f'COALESCE("{SERIES_COL}", \'\') AS series_raw'
-else:                        # create an empty column so schema is stable
+    SERIES_EXPR = f"COALESCE(\"{SERIES_COL}\", '') AS series_raw"
+else:  # create an empty column so schema is stable
     SERIES_EXPR = "''::VARCHAR                AS series_raw"
+
 
 # ── helper UDF  (ISBN-10 → ISBN-13) ───────────────────────────────────
 def isbn10_to13(isbn10: str | None) -> str | None:
@@ -54,13 +67,14 @@ def isbn10_to13(isbn10: str | None) -> str | None:
     d = re.sub(r"[^0-9Xx]", "", isbn10)
     if len(d) != 10:
         return None
-    body  = "978" + d[:9]
-    chk   = (10 - sum((1,3)[i & 1] * int(x) for i, x in enumerate(body)) % 10) % 10
+    body = "978" + d[:9]
+    chk = (10 - sum((1, 3)[i & 1] * int(x) for i, x in enumerate(body)) % 10) % 10
     return body + str(chk)
+
 
 # ── ingest ────────────────────────────────────────────────────────────
 print(f"=== Goodreads ingest started  ({len(FILES)} chunks) ===")
-t0  = time.time()
+t0 = time.time()
 con = duckdb.connect(DB_FILE)
 con.create_function("isbn10_to13", isbn10_to13)
 
@@ -117,14 +131,17 @@ FROM dedup;
 con.execute(sql, [FILES])
 
 # ── indexes / constraints ──────────────────────────────────────────────
-con.execute("CREATE UNIQUE INDEX IF NOT EXISTS goodreads_isbn13_uidx "
-            "ON goodreads(isbn13);")
-con.execute("CREATE INDEX IF NOT EXISTS goodreads_authors_idx "
-            "ON goodreads(authors);")
-con.execute("CREATE INDEX IF NOT EXISTS goodreads_series_idx "
-            "ON goodreads(series);")
+con.execute(
+    "CREATE UNIQUE INDEX IF NOT EXISTS goodreads_isbn13_uidx " "ON goodreads(isbn13);"
+)
+con.execute(
+    "CREATE INDEX IF NOT EXISTS goodreads_authors_idx " "ON goodreads(authors);"
+)
+con.execute("CREATE INDEX IF NOT EXISTS goodreads_series_idx " "ON goodreads(series);")
 
-print(f"✓ Goodreads rows ingested: "
-      f"{con.sql('SELECT COUNT(*) FROM goodreads').fetchone()[0]:,}")
+print(
+    f"✓ Goodreads rows ingested: "
+    f"{con.sql('SELECT COUNT(*) FROM goodreads').fetchone()[0]:,}"
+)
 print(f"🕒  finished in {time.time()-t0:.1f}s")
 con.close()

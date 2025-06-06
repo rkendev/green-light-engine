@@ -7,7 +7,7 @@ license      = "MIT"
 readme       = "README.md"
 
 # we only want dependency management for now
-package-mode = false           
+package-mode = false
 
 # ──────────────────────────────────────────────
 # Dependency section (must exist, even if empty)
@@ -32,6 +32,7 @@ prefect         = "^3.3"
 
 # ──────────────────────────────────────────────
 torch = {version = "2.2.2+cpu", source = "torch-cpu"}
+sklego = "^0.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^25.1.0"
@@ -49,3 +50,7 @@ build-backend = "poetry.core.masonry.api"
 name     = "torch-cpu"
 url      = "https://download.pytorch.org/whl/cpu"
 priority = "explicit"
+
+[tool.isort]
+profile = "black"          # <- key line
+line_length = 88           # keep in sync with Black (optional)

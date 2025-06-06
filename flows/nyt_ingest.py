@@ -1,7 +1,10 @@
 # flows/nyt_ingest.py  (pure Python version)
+import json
+import os
 from datetime import datetime, timedelta
-import os, json, requests
 from pathlib import Path
+
+import requests
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -48,7 +51,7 @@ if __name__ == "__main__":
 
     p = ArgumentParser()
     p.add_argument("--start", default="2018-01-01")
-    p.add_argument("--end",   default="2024-12-30")
+    p.add_argument("--end", default="2024-12-30")
     args = p.parse_args()
 
     ingest_range(args.start, args.end)

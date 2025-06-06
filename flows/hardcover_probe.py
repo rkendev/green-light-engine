@@ -7,18 +7,20 @@ hardcover_probe.py
 • Reports join hit-rate.
 """
 
-
-import json, time
+import json
+import time
 from pathlib import Path
+
 from dotenv import load_dotenv
+
 load_dotenv(".env")
 
 from flows.hardcover_client import fetch_book
-from flows.models import BookDoc        # same package                   # <-- Pydantic model
+from flows.models import BookDoc  # same package                   # <-- Pydantic model
 
 # -------------------------- config -----------------------------------------
 NYT_DIR = Path("data/raw/nyt")
-HC_DIR  = Path("data/raw/hardcover")
+HC_DIR = Path("data/raw/hardcover")
 HC_DIR.mkdir(parents=True, exist_ok=True)
 
 
@@ -61,7 +63,7 @@ def main(n: int = 1000, delay: float = 0.4):
 
         if idx % 100 == 0:
             print(f"Progress {idx}/{n} — hit-rate: {hits/idx:.1%}")
-        time.sleep(delay)                         # polite pacing
+        time.sleep(delay)  # polite pacing
 
     total = hits + misses
     print("\n=== Hardcover join-probe summary ===")
@@ -73,8 +75,9 @@ def main(n: int = 1000, delay: float = 0.4):
 
 if __name__ == "__main__":
     import argparse
+
     ap = argparse.ArgumentParser()
-    ap.add_argument("--n",     type=int,   default=1000, help="ISBNs to probe")
-    ap.add_argument("--delay", type=float, default=0.4,  help="sleep seconds")
+    ap.add_argument("--n", type=int, default=1000, help="ISBNs to probe")
+    ap.add_argument("--delay", type=float, default=0.4, help="sleep seconds")
     args = ap.parse_args()
     main(args.n, args.delay)
