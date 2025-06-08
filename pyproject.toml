@@ -7,7 +7,10 @@ license      = "MIT"
 readme       = "README.md"
 
 # we only want dependency management for now
-package-mode = false
+# package-mode = false
+
+package-mode    = true               #  ← NEW
+packages        = [{ include = "flows" }]   #  ← NEW
 
 # ──────────────────────────────────────────────
 # Dependency section (must exist, even if empty)
@@ -28,7 +31,7 @@ pandera         = "^0.18"
 cleanlab        = "^2.7"
 sentence-transformers = "^2.6"
 scikit-learn    = "^1.6"
-prefect         = "^3.3"
+prefect         = ">=2.14,<3.0"
 
 # ──────────────────────────────────────────────
 torch = {version = "2.2.2+cpu", source = "torch-cpu"}
