@@ -2,42 +2,44 @@ name: NYT weekly crawler
 
 on:
   schedule:
-    # ── minute hour dom mon dow  (all UTC) ──
-    - cron: '0 9 * * 1'    # every Monday 09:00 UTC
-  workflow_dispatch:       # manual “Run workflow” button
+    - cron: "0 9 * * 1"   # Mondays 09:00 UTC
+  workflow_dispatch: {}
 
 concurrency:
-  group: nyt-weekly        # never run two in parallel
+  group: nyt-weekly
   cancel-in-progress: true
 
 jobs:
   fetch-and-archive:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          fetch-depth: 0   # we *push* in other branches; safe here
+          python-version: "3.12"
 
-      - uses: actions/setup-python@v5
-        with: { python-version: "3.12" }
+      - name: Install Poetry
+        run: pipx install poetry==1.8.3
 
-      - uses: abatilo/actions-poetry@v3
+      - name: Install deps
+        env:
+          PREFECT_API_ENABLE: "false"
+        run: poetry install --no-interaction --no-root
 
-      - name: Install deps (no-root)
-        run: poetry install --no-interaction --no-root --with dev
-
-      - name: Run one-shot NYT fetch
+      - name: Pull last Monday snapshot
         env:
           NYT_API_KEY: ${{ secrets.NYT_API_KEY }}
-        run: |
-          poetry run python flows/nyt_ingest.py
-          ls -l data/raw/nyt | tail -n 5   # tiny sanity peek
+        run: poetry run python flows/nyt_ingest.py
 
-      - name: Upload NYT snapshot artefact
+      - name: Show latest files
+        run: ls -l data/raw/nyt | tail -n 5
+
+      - name: Upload snapshot artefact
         uses: actions/upload-artifact@v4
         with:
           name: nyt-${{ github.run_number }}
           path: data/raw/nyt/*.json
-          if-no-files-found: ignore
-          retention-days: 30   # keep four–five latest runs
+          if-no-files-found: warn
+          retention-days: 30

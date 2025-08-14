@@ -1,59 +1,31 @@
 [tool.poetry]
-name         = "green-light-engine"
-version      = "0.1.0"
-description  = "Niche Prediction Model Project"
-authors      = ["rkendev <aspjscript@hotmail.com>"]
-license      = "MIT"
-readme       = "README.md"
+name = "green-light-engine"
+version = "0.1.0"
+description = "Niche Prediction Model Project"
+authors = ["rkendev <aspjscript@hotmail.com>"]
+license = "MIT"
+readme = "README.md"
+package-mode = true
+packages = [{ include = "flows" }]
 
-# we only want dependency management for now
-# package-mode = false
-
-package-mode    = true               #  ← NEW
-packages        = [{ include = "flows" }]   #  ← NEW
-
-# ──────────────────────────────────────────────
-# Dependency section (must exist, even if empty)
-# ──────────────────────────────────────────────
 [tool.poetry.dependencies]
-python = ">=3.12,<3.14"         # ← **move the constraint here**
-
-# (Add real libs later with `poetry add …`)
-pandas          = "^2.1"
-polars          = "^0.20"
-duckdb          = "^1.2"
-pyarrow         = "^15.0"
-notebook        = "^7.0"
-matplotlib      = "^3.8"
-seaborn         = "^0.13"
-great-expectations = "^0.17"
-pandera         = "^0.18"
-cleanlab        = "^2.7"
-sentence-transformers = "^2.6"
-scikit-learn    = "^1.6"
-prefect         = ">=2.14,<3.0"
-
-# ──────────────────────────────────────────────
-torch = {version = "2.2.2+cpu", source = "torch-cpu"}
-sklego = "^0.0"
+python = "^3.12"
+requests = "^2.32.3"
+python-dotenv = "^1.0.1"
+prefect = "^2.19.7"
+duckdb = "^1.1.2"           # safe to keep; used later
 
 [tool.poetry.group.dev.dependencies]
-black = "^25.1.0"
-isort = "^6.0.1"
-pytest = "^8.4.0"
-pytest-cov = "^6.1.1"
-pre-commit = "^4.2.0"
-jupyterlab = "^4.4.3"
+black = "^24.10.0"
+isort = "^5.13.2"
+pytest = "^8.3.3"
+pytest-cov = "^5.0.0"
+pre-commit = "^3.8.0"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
-[[tool.poetry.source]]
-name     = "torch-cpu"
-url      = "https://download.pytorch.org/whl/cpu"
-priority = "explicit"
-
 [tool.isort]
-profile = "black"          # <- key line
-line_length = 88           # keep in sync with Black (optional)
+profile = "black"
+line_length = 88
