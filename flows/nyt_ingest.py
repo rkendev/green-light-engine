@@ -12,11 +12,13 @@ from dotenv import load_dotenv
 RAW_DIR = Path("data/raw/nyt")
 RAW_DIR.mkdir(parents=True, exist_ok=True)
 
+
 def last_monday_utc() -> datetime:
     now = datetime.now(timezone.utc)
     monday = now - timedelta(days=(now.weekday() + 7))
     monday = monday.replace(hour=0, minute=0, second=0, microsecond=0)
     return monday
+
 
 def fetch_one_overview(api_key: str, monday_iso: str) -> dict:
     url = (
@@ -27,10 +29,12 @@ def fetch_one_overview(api_key: str, monday_iso: str) -> dict:
     r.raise_for_status()
     return r.json()
 
+
 def save_snapshot(payload: dict, monday_iso: str) -> Path:
     out = RAW_DIR / f"{monday_iso}.json"
     out.write_text(json.dumps(payload, indent=2), encoding="utf-8")
     return out
+
 
 def iter_mondays(start_iso: str, end_iso: str):
     dt = datetime.fromisoformat(start_iso)
@@ -38,6 +42,7 @@ def iter_mondays(start_iso: str, end_iso: str):
     while dt <= end:
         yield dt.strftime("%Y-%m-%d")
         dt += timedelta(days=7)
+
 
 def ingest_range(start_iso: str, end_iso: str):
     api_key = os.environ["NYT_API_KEY"]
@@ -47,12 +52,16 @@ def ingest_range(start_iso: str, end_iso: str):
         out = save_snapshot(payload, monday_iso)
         print(f"✓ Saved {out}")
 
+
 if __name__ == "__main__":
     load_dotenv()
     default_date = last_monday_utc().strftime("%Y-%m-%d")
     p = ArgumentParser()
-    p.add_argument("--date", default=default_date,
-                   help="Fetch exactly one Monday (default: last Monday UTC)")
+    p.add_argument(
+        "--date",
+        default=default_date,
+        help="Fetch exactly one Monday (default: last Monday UTC)",
+    )
     p.add_argument("--start", help="Range mode: first Monday (inclusive)")
     p.add_argument("--end", help="Range mode: last Monday (inclusive)")
     args = p.parse_args()
