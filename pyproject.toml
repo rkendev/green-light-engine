@@ -6,7 +6,10 @@ authors = ["rkendev <aspjscript@hotmail.com>"]
 license = "MIT"
 readme = "README.md"
 package-mode = true
-packages = [{ include = "flows" }]
+packages = [
+  { include = "flows" },
+  { include = "gle", from = "src" }
+]
 
 [tool.poetry.dependencies]
 python = "^3.12"
