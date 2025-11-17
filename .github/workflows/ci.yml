@@ -22,7 +22,7 @@ jobs:
         env:
           PREFECT_API_ENABLE: "false"
         run: |
-          poetry install --no-interaction --no-root
+          poetry install --no-interaction
 
       - name: Black format check
         run: poetry run black --check .
