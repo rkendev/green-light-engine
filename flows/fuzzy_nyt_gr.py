@@ -31,10 +31,30 @@ cli.add_argument("--use-series", action="store_true")
 cli.add_argument("--show-misses", action="store_true")
 args = cli.parse_args()
 
+
 # ── helpers -----------------------------------------------------
-surname = lambda full: (full or "").split()[-1].lower()
-_rx_title = re.compile(r"^\s*(?P<body>.*?)(?:\s*[:(].*)?$", re.VERBOSE)
-clean_title = lambda t: _rx_title.match(t).group("body").strip().lower() if t else ""
+def surname(full: str | None) -> str:
+    value = full or ""
+    return value.split()[-1].lower()
+
+
+_rx_title = re.compile(
+    r"^\s*(?P<body>.*?)(?:\s*[:(].*)?$",
+    re.VERBOSE,
+)
+
+
+def clean_title(title: str | None) -> str:
+    if not title:
+        return ""
+
+    match = _rx_title.match(title)
+    if not match:
+        return ""
+
+    body = match.group("body")
+    return body.strip().lower()
+
 
 # ── DB ----------------------------------------------------------
 DB = pathlib.Path("data/green_light.duckdb")

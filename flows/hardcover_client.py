@@ -1,5 +1,4 @@
 # flows/hardcover_client.py
-import json
 import os
 from functools import lru_cache
 from pathlib import Path

@@ -10,7 +10,6 @@ from __future__ import annotations
 
 import os
 from argparse import ArgumentParser
-from datetime import datetime, timezone
 
 from dotenv import load_dotenv
 
