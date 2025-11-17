@@ -14,7 +14,12 @@ from datetime import datetime, timezone
 
 from dotenv import load_dotenv
 
-from gle.ingest_nyt import NytIngestConfig, ingest_one_monday, ingest_range, last_monday_utc
+from gle.ingest_nyt import (
+    NytIngestConfig,
+    ingest_one_monday,
+    ingest_range,
+    last_monday_utc,
+)
 
 
 def get_required_env(name: str) -> str:
