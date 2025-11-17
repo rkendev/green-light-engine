@@ -7,7 +7,6 @@ from typing import Optional
 
 import duckdb
 
-
 DEFAULT_NYT_RAW_DIR = Path("data/raw/nyt")
 DEFAULT_DUCKDB_PATH = Path("data/green_light.duckdb")
 
@@ -134,8 +133,7 @@ def _goodreads_coverage(
 
     try:
         con.execute(
-            "select 1 from information_schema.tables "
-            "where table_name = 'goodreads'"
+            "select 1 from information_schema.tables " "where table_name = 'goodreads'"
         )
         if con.fetchone() is None:
             return None, None

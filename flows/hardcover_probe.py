@@ -13,10 +13,10 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-load_dotenv(".env")
-
 from flows.hardcover_client import fetch_book
 from flows.models import BookDoc  # same package                   # <-- Pydantic model
+
+load_dotenv(".env")
 
 # -------------------------- config -----------------------------------------
 NYT_DIR = Path("data/raw/nyt")
