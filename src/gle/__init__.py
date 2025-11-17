@@ -9,7 +9,7 @@ High level modules
 gle.ingest_nyt      New York Times books list ingestion
 """
 
-from importlib.metadata import version, PackageNotFoundError
+from importlib.metadata import PackageNotFoundError, version
 
 try:
     __version__ = version("green-light-engine")

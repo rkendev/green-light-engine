@@ -8,7 +8,6 @@ from typing import Dict, Iterable, Optional
 
 import requests
 
-
 DEFAULT_RAW_DIR = Path("data/raw/nyt")
 
 
