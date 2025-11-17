@@ -5,10 +5,12 @@ on:
   pull_request:
 
 jobs:
-  test-and-lint:
+  ci:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -16,7 +18,9 @@ jobs:
           python-version: "3.12"
 
       - name: Install Poetry
-        run: pipx install poetry==1.8.3
+        uses: abatilo/actions-poetry@v3
+        with:
+          poetry-version: "1.8.3"
 
       - name: Install deps
         env:
@@ -24,11 +28,17 @@ jobs:
         run: |
           poetry install --no-interaction
 
-      - name: Black format check
-        run: poetry run black --check .
+      - name: Lint
+        run: |
+          poetry run ruff check .
+          poetry run isort --check .
+          poetry run black --check .
 
-      - name: Isort import order
-        run: poetry run isort --check .
+      - name: Tests
+        run: |
+          poetry run pytest
 
-      - name: Run pytest
-        run: poetry run pytest --cov=flows --cov-report=xml
+      - name: Gate0 data sufficiency
+        run: |
+          poetry run gle-gate0 || true
+
